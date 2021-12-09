@@ -1,31 +1,35 @@
-import { Positional, Resource } from 'ember-resources';
+import { debug } from '@ember/debug';
 import { registerDestructor } from '@ember/destroyable';
 import { action } from '@ember/object';
-import { debug } from '@ember/debug';
+
+import { Resource } from 'ember-resources';
+
+import type { Positional } from 'ember-resources';
+import type { Howl } from 'howler';
 
 type Filepath = string;
 interface UseSoundOptions {
   id?: string;
   volume?: number;
-  playbackRate?: any;
-  soundEnabled?: any;
-  interrupt?: any;
-  onload?: any;
+  playbackRate?: number;
+  soundEnabled?: boolean;
+  interrupt?: boolean;
+  onload?: (soundId: number) => void;
 }
 
 export type UseSoundArgs = [Filepath | Filepath[], UseSoundOptions?];
 
 export class UseSound extends Resource<Positional<UseSoundArgs>> {
-  declare sound: any;
+  declare sound: Howl;
 
   constructor(
-    owner: any,
+    owner: unknown,
     args: Positional<UseSoundArgs>,
     previous: Resource<Positional<UseSoundArgs>>
   ) {
     super(owner, args, previous);
 
-    let howl: any;
+    let howl: Howl;
 
     if (!previous) {
       // initial setup
@@ -33,12 +37,12 @@ export class UseSound extends Resource<Positional<UseSoundArgs>> {
       const [src, options = {}] = args.positional;
       const { volume = 1, playbackRate = 1, onload, ...delegated } = options;
 
-      const handleLoad = () => {
-        onload && onload();
+      const handleLoad = (soundId: number) => {
+        onload?.(soundId);
         this.sound = howl;
       };
 
-      import('howler').then((mod: any) => {
+      import('howler').then((mod: { Howl: typeof Howl }) => {
         howl = new mod.Howl({
           src: Array.isArray(src) ? src : [src],
           volume,
@@ -67,6 +71,7 @@ export class UseSound extends Resource<Positional<UseSoundArgs>> {
 
     if (opts.soundEnabled === false) {
       this.sound.stop();
+
       return;
     }
 

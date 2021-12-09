@@ -1,6 +1,8 @@
 {
   "name": "ember-use-sound",
   "private": true,
+  "license": "MIT",
+  "author": "Chris Miller <chrsmllr@gmail.com>",
   "workspaces": [
     "ember-use-sound"
   ],
@@ -14,5 +16,28 @@
   },
   "engines": {
     "node": ">= 12"
+  },
+  "devDependencies": {
+    "@nullvoxpopuli/eslint-configs": "^2.1.10",
+    "release-it": "^14.11.8"
+  },
+  "release-it": {
+    "git": {
+      "commitMessage": "chore: release v${version}",
+      "changelog": "npx auto-changelog --stdout --commit-limit true -u --template https://raw.githubusercontent.com/release-it/release-it/master/templates/changelog-compact.hbs"
+    },
+    "npm": {
+      "publish": true
+    },
+    "github": {
+      "release": true
+    },
+    "hooks": {
+      "after:bump": "npx auto-changelog -p --commit-limit true --hide-credit true && git add CHANGELOG.md"
+    }
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
   }
 }

@@ -1,6 +1,5 @@
 'use-strict';
 
-const { createRequire } = require('module');
 const resolve = require.resolve;
 
 module.exports = {
