@@ -1,0 +1,87 @@
+{
+  "name": "ember-use-sound",
+  "version": "0.0.1",
+  "description": "Sound Effects for Ember Apps",
+  "keywords": [
+    "ember-addon",
+    "ember-use-sound"
+  ],
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "declarations",
+  "repository": "",
+  "license": "MIT",
+  "author": "Chris Miller <chrsmllr@gmail.com>",
+  "files": [
+    "addon-main.cjs",
+    "dist",
+    "declarations"
+  ],
+  "scripts": {
+    "build": "FORCE_COLOR=1 npm-run-all --aggregate-output --parallel \"build:*\"",
+    "build:js": "rollup --c",
+    "build:types": "tsc --build",
+    "lint": "npm-run-all --aggregate-output --continue-on-error --parallel \"lint:!(fix)\"",
+    "lint:fix": "npm-run-all --aggregate-output --continue-on-error --parallel lint:*:fix",
+    "lint:hbs": "ember-template-lint .",
+    "lint:hbs:fix": "ember-template-lint . --fix",
+    "lint:js": "eslint . --cache",
+    "lint:js:fix": "eslint . --fix",
+    "start": "rollup --config --watch",
+    "test": "echo 'Addon does not have tests, run tests in test-app'",
+    "prepare": "yarn build"
+  },
+  "dependencies": {
+    "@embroider/addon-shim": "^0.47.0",
+    "@glimmer/component": "^1.0.4",
+    "@types/ember__debug": "^3.16.5",
+    "ember-resources": "^4.0.0",
+    "howler": "^2.2.3"
+  },
+  "devDependencies": {
+    "@babel/core": "7.16.0",
+    "@babel/plugin-proposal-class-properties": "7.16.0",
+    "@babel/plugin-proposal-decorators": "7.16.4",
+    "@babel/plugin-syntax-decorators": "7.16.0",
+    "@babel/preset-typescript": "7.16.0",
+    "@embroider/addon-dev": "0.47.2",
+    "@nullvoxpopuli/eslint-configs": "^2.1.1",
+    "@rollup/plugin-babel": "5.3.0",
+    "@rollup/plugin-node-resolve": "^13.0.6",
+    "@types/ember__component": "^3.16.6",
+    "@types/ember__destroyable": "^3.22.0",
+    "@types/howler": "^2.2.4",
+    "babel-eslint": "10.1.0",
+    "ember-template-lint": "3.14.0",
+    "eslint": "7.32.0",
+    "eslint-config-prettier": "8.3.0",
+    "eslint-plugin-ember": "10.5.8",
+    "eslint-plugin-node": "11.1.0",
+    "eslint-plugin-prettier": "4.0.0",
+    "eslint-plugin-qunit": "7.1.0",
+    "npm-run-all": "4.1.5",
+    "rollup": "2.60.2",
+    "typescript": "^4.4.2"
+  },
+  "engines": {
+    "node": "12.* || >= 14"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org"
+  },
+  "ember": {
+    "edition": "octane"
+  },
+  "ember-addon": {
+    "version": 2,
+    "type": "addon",
+    "main": "addon-main.cjs"
+  },
+  "exports": {
+    "./*": "./dist/*",
+    "./addon-main.js": "./addon-main.cjs"
+  },
+  "volta": {
+    "extends": "../package.json"
+  }
+}
