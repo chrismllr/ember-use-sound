@@ -4,7 +4,8 @@
   "license": "MIT",
   "author": "Chris Miller <chrsmllr@gmail.com>",
   "workspaces": [
-    "ember-use-sound"
+    "ember-use-sound",
+    "test-app"
   ],
   "scripts": {
     "build": "yarn workspace ember-use-sound build"

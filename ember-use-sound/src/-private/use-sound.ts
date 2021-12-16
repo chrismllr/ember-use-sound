@@ -20,7 +20,8 @@ interface UseSoundOptions {
 export type UseSoundArgs = [Filepath | Filepath[], UseSoundOptions?];
 
 export class UseSound extends Resource<Positional<UseSoundArgs>> {
-  declare sound: Howl;
+  sound: Howl | undefined;
+  importPromise: Promise<void | Howl> | undefined;
 
   constructor(
     owner: unknown,
@@ -37,21 +38,23 @@ export class UseSound extends Resource<Positional<UseSoundArgs>> {
       const [src, options = {}] = args.positional;
       const { volume = 1, playbackRate = 1, onload, ...delegated } = options;
 
-      const handleLoad = (soundId: number) => {
-        onload?.(soundId);
-        this.sound = howl;
-      };
-
-      import('howler').then((mod: { Howl: typeof Howl }) => {
-        howl = new mod.Howl({
-          src: Array.isArray(src) ? src : [src],
-          volume,
-          rate: playbackRate,
-          onload: handleLoad,
-          onloaderror: () => {
-            debug('Error initializing use-sound');
-          },
-          ...delegated,
+      this.importPromise = import('howler').then((mod: { Howl: typeof Howl }) => {
+        return new Promise((res, rej) => {
+          howl = new mod.Howl({
+            src: Array.isArray(src) ? src : [src],
+            volume,
+            rate: playbackRate,
+            onload: (soundId: number) => {
+              onload?.(soundId);
+              this.sound = howl;
+              res(this.sound);
+            },
+            onloaderror: () => {
+              debug('Error initializing use-sound');
+              rej();
+            },
+            ...delegated,
+          });
         });
       });
     } else {
@@ -63,34 +66,37 @@ export class UseSound extends Resource<Positional<UseSoundArgs>> {
     });
   }
 
-  @action play(options?: UseSoundOptions) {
+  @action async play(options?: UseSoundOptions) {
+    // TODO: What's worse -- a sound which doesnt play or a sound which plays late
+    await this.importPromise;
+
     const opts = {
       ...(this.args.positional[1] || {}),
       ...(options || {}),
     };
 
     if (opts.soundEnabled === false) {
-      this.sound.stop();
+      this.sound?.stop();
 
       return;
     }
 
     if (opts.interrupt) {
-      this.sound.stop();
+      this.sound?.stop();
     }
 
     if (opts.volume) {
-      this.sound.volume(opts.volume);
+      this.sound?.volume(opts.volume);
     }
 
     if (opts.playbackRate) {
-      this.sound.rate(opts.playbackRate);
+      this.sound?.rate(opts.playbackRate);
     }
 
-    this.sound.play(opts.id);
+    this.sound?.play(opts.id);
   }
 
   @action stop() {
-    this.sound.stop();
+    this.sound?.stop();
   }
 }
