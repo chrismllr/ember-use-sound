@@ -18,6 +18,31 @@ yarn add ember-use-sound
 ember install ember-use-sound
 ```
 
+## Example
+
+```ts
+import { Component } from '@glimmer/component';
+import { useSound } from 'ember-use-sound';
+
+class Button extends Component {
+  sfx = useSound(this, () => ({
+    positional: [
+      ['/assets/pop-in.mp3', '/assets/pop-out.mp3']
+    ]
+  }));
+}
+```
+
+```hbs
+<button 
+  type='button'
+  {{on 'mousedown' this.sfx.play('/assets/pop-in.mp3')}}  
+  {{on 'mouseup' this.sfx.play('/assets/pop-out.mp3')}}  
+>
+  Click me!
+</button>
+```
+
 ## Contributing
 
 See the [Contributing](CONTRIBUTING.md) guide for details.
