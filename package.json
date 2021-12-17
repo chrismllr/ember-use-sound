@@ -8,7 +8,8 @@
     "test-app"
   ],
   "scripts": {
-    "build": "yarn workspace ember-use-sound build"
+    "build": "yarn workspace ember-use-sound build",
+    "prepare": "yarn build"
   },
   "volta": {
     "node": "16.13.1",
