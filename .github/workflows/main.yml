@@ -52,14 +52,17 @@ jobs:
     needs: [test, lint]
 
     steps:
-    - uses: actions/checkout@v1
-    - uses: actions/setup-node@v1
+    - uses: actions/checkout@v2
+    - uses: volta-cli/action@v1
       with:
         node-version: 14.x
+
     - name: install dependencies
       run: yarn install
+      
     - name: ember test
-      run: yarn test:ember
+      run: yarn ember test
+      working-directory: ./test-app
 
   try-scenarios:
     name: Compatibility
