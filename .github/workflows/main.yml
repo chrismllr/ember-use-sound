@@ -13,16 +13,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - uses: volta-cli/action@v1
-      with:
-        node-version: 14.x
+      - uses: actions/checkout@v2
+      - uses: volta-cli/action@v1
+        with:
+          node-version: 14.x
 
-    - name: install dependencies
-      run: yarn install --frozen-lockfile
+      - name: install dependencies
+        run: yarn install --frozen-lockfile
 
-    - name: lint
-      run: yarn workspace ember-use-sound lint
+      - name: lint
+        run: yarn workspace ember-use-sound lint
 
   test:
     name: Baseline Tests
@@ -33,16 +33,16 @@ jobs:
         node-version: [12.x, 14.x]
 
     steps:
-    - uses: actions/checkout@v2
-    - uses: volta-cli/action@v1
-      with:
-        node-version: ${{ matrix.node-version }}
+      - uses: actions/checkout@v2
+      - uses: volta-cli/action@v1
+        with:
+          node-version: ${{ matrix.node-version }}
 
-    - run: yarn install
+      - run: yarn install
 
-    - name: Test with ${{ matrix.node-version }}
-      run: yarn run test:ember
-      working-directory: ./test-app
+      - name: Test with ${{ matrix.node-version }}
+        run: yarn run test:ember
+        working-directory: ./test-app
 
   try-scenarios:
     name: Compatibility
@@ -64,20 +64,20 @@ jobs:
           - embroider-optimized
 
     steps:
-    - uses: actions/checkout@v2
-    - uses: volta-cli/action@v1
-      with:
-        node-version: 14.x
+      - uses: actions/checkout@v2
+      - uses: volta-cli/action@v1
+        with:
+          node-version: 14.x
 
-    - name: install dependencies
-      run: yarn install --frozen-lockfile
-      
-    - name: test
-      run: |
-        cd ember-use-sound
-        yarn build
-        yarn link
-        cd ../test-app
-        # ember-try does the other side of the link
-        yarn ember try:one ${{ matrix.ember-try-scenario }} --skip-cleanup
+      - name: install dependencies
+        run: yarn install --frozen-lockfile
+        
+      - name: test
+        run: |
+          cd ember-use-sound
+          yarn build
+          yarn link
+          cd ../test-app
+          # ember-try does the other side of the link
+          yarn ember try:one ${{ matrix.ember-try-scenario }} --skip-cleanup
   
