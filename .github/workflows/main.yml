@@ -14,71 +14,83 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
+    - uses: volta-cli/action@v1
+        with:
+          node-version: 14.x
+    - name: install dependencies
+      run: yarn install --frozen-lockfile
+    - name: lint
+      run: yarn workspace ember-use-sound lint
+
+  test:
+    name: Baseline Tests
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [12.x, 14.x]
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: volta-cli/action@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+
+    - name: install dependencies
+      run: yarn install --frozen-lockfile
+
+    - name: Test with ${{ matrix.node-version }}
+      run: yarn ember test
+      working-directory: ./test-app
+
+  floating-dependencies:
+    name: Floating Deps
+    runs-on: ubuntu-latest
+
+    needs: [test, lint]
+
+    steps:
+    - uses: actions/checkout@v1
     - uses: actions/setup-node@v1
       with:
         node-version: 14.x
     - name: install dependencies
-      run: yarn install --pure-lockfile
-    - name: lint
-      run: yarn workspace ember-use-sound lint
+      run: yarn install
+    - name: ember test
+      run: yarn test:ember
 
-  # test:
-  #   name: Tests
-  #   runs-on: ubuntu-latest
+  try-scenarios:
+    name: Compatibility
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    needs: [test, lint]
 
-  #   strategy:
-  #     matrix:
-  #       node-version: [12.x, 14.x]
+    strategy:
+      fail-fast: true
+      matrix:
+        ember-try-scenario:
+          - ember-3.25
+          - ember-3.26
+          - ember-3.28
+          - ember-release
+          - ember-beta
+          - ember-canary
+          - embroider-safe
+          - embroider-optimized
 
-  #   steps:
-  #   - uses: actions/checkout@v1
-  #   - uses: actions/setup-node@v1
-  #     with:
-  #       node-version: ${{ matrix.node-version }}
-  #   - name: install dependencies
-  #     run: yarn install --pure-lockfile
-  #   - name: ember test
-  #     run: yarn test:ember
-
-  # floating-dependencies:
-  #   name: Floating Deps
-  #   runs-on: ubuntu-latest
-
-  #   needs: [test, lint]
-
-  #   steps:
-  #   - uses: actions/checkout@v1
-  #   - uses: actions/setup-node@v1
-  #     with:
-  #       node-version: 14.x
-  #   - name: install dependencies
-  #     run: yarn install
-  #   - name: ember test
-  #     run: yarn test:ember
-
-  # try-scenarios:
-  #   name: Compatibility
-  #   runs-on: ubuntu-latest
-  #   timeout-minutes: 7
-  #   needs: [test, lint]
-
-  #   strategy:
-  #     matrix:
-  #       ember-try-scenario:
-  #         - ember-lts-3.24
-  #         - ember-release
-  #         - ember-beta
-  #         - ember-canary
-  #         - embroider-safe
-  #         - embroider-optimized
-
-  #   steps:
-  #   - uses: actions/checkout@v1
-  #   - uses: actions/setup-node@v1
-  #     with:
-  #       node-version: 14.x
-  #   - name: install dependencies
-  #     run: yarn install --frozen-lockfile
-  #   - name: test
-  #     run: node_modules/.bin/ember try:one ${{ matrix.ember-try-scenario }} --skip-cleanup
+    steps:
+    - uses: actions/checkout@v2
+    - uses: volta-cli/action@v1
+        with:
+          node-version: 14.x
+    - name: install dependencies
+      run: yarn install --frozen-lockfile
+    - name: test
+      run: |
+        cd ember-use-sound
+        yarn build
+        yarn link
+        cd ../test-app
+        # ember-try does the other side of the link
+        yarn ember try:one ${{ matrix.ember-try-scenario }} --skip-cleanup
   
